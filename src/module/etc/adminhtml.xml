@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <catalog>
+            <children>
+                <sphinx>
+                    <children>
+                        <seotext module="ecomdev_sphinxseo" translate="title">
+                            <title>SEO Text</title>
+                            <sort_order>500</sort_order>
+                            <action>adminhtml/sphinxseo_text/index</action>
+                        </seotext>
+                    </children>
+                </sphinx>
+            </children>
+        </catalog>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <catalog>
+                        <children>
+                            <sphinx>
+                                <children>
+                                    <seotext module="ecomdev_sphinxseo" translate="title">
+                                        <title>Manage SEO Text</title>
+                                        <sort_order>500</sort_order>
+                                    </seotext>
+                                </children>
+                            </sphinx>
+                        </children>
+                    </catalog>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

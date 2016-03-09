@@ -1,0 +1,28 @@
+<?php /** @var Mage_Adminhtml_Block_Template $this */ ?>
+<div class="grid">
+    <table cellpadding="0" cellspacing="0" class="border">
+        <thead>
+            <tr class="headings" id="#{id}-header">
+                <th><?php echo $this->__('Attribute');?></th>
+                <th><?php echo $this->__('Conditions');?></th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody class="body">
+
+        </tbody>
+        <tfoot>
+            <tr class="footer">
+                <td class="a-right"><label for="#{id}-attribute"><?php echo $this->__('Attribute');?></label></td>
+                <td>
+                    <select id="#{id}-attribute" class="attribute"></select>
+                </td>
+                <td>
+                    <button class="scalable add" type="button">
+                        <span><span><span><?php echo $this->__('Add Condition');?></span></span></span>
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

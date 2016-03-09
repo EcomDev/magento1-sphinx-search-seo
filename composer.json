@@ -1,0 +1,20 @@
+{
+  "name": "ecomdev/sphinx-seo",
+  "license": "OSL-3.0",
+  "type": "magento-module",
+  "description": "Sphinx SEO Extension For Magento",
+  "require": {
+    "php": ">=5.4.0",
+    "ecomdev/sphinx": "*"
+  },
+  "require-dev": {},
+  "authors":[
+    {
+      "name":"Ivan Chepurnyi",
+      "email": "ivan.chepurnyi@gmail.com"
+    }
+  ],
+  "config": {
+    "bin-dir": "bin"
+  }
+}

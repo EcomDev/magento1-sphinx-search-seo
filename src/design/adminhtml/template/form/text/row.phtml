@@ -1,0 +1,18 @@
+<?php /** @var Mage_Adminhtml_Block_Template $this */ ?>
+<tr id="#{id}">
+    <td>#{label}</td>
+    <td>
+        <div class="option-template" style="display: none;">
+            <label class="label"><span class="text"></span></label><input type="hidden" class="input" />
+            <button class="delete scalable" type="button"><span><span><span><?php echo $this->__('Delete');?></span></span></span></button>
+        </div>
+        <div class="option-container"></div>
+        <div>
+            <select id="#{id}-#{code}-option" class="option-select" data-input-name="#{fieldPrefix}[#{code}][__option__]" data-input-id="#{id}-#{code}-__option__"></select>
+            <button class="scalable add" type="button">
+                <span><span><span><?php echo $this->__('Add Option');?></span></span></span>
+            </button>
+        </div>
+    </td>
+    <td><button class="delete delete-row scalable" type="button"><span><span><span><?php echo $this->__('Delete');?></span></span></span></button></td>
+</tr>

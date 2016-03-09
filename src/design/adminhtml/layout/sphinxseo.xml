@@ -1,0 +1,81 @@
+<layout>
+
+    <adminhtml_sphinx_attribute_edit>
+        <reference name="head">
+            <action method="addItem"><type>skin_js</type><file>js/ecomdev/sphinxseo/attribute.js</file></action>
+        </reference>
+
+        <reference name="sphinx.attribute.edit.form">
+            <block name="sphinx.attribute.edit.form.seo"
+                   type="ecomdev_sphinxseo/adminhtml_attribute_edit_form"
+                   as="seo">
+                <block name="sphinx.attribute.edit.form.seo.row" type="adminhtml/template" template="ecomdev/sphinxseo/form/attribute/row.phtml" as="row" />
+                <block name="sphinx.attribute.edit.form.seo.container" type="adminhtml/template" template="ecomdev/sphinxseo/form/attribute/container.phtml" as="container" />
+            </block>
+        </reference>
+    </adminhtml_sphinx_attribute_edit>
+
+
+    <adminhtml_sphinxseo_text_index>
+        <block name="sphinx.seo.text"
+               parent="content"
+               type="ecomdev_sphinxseo/adminhtml_text">
+            <block name="sphinx.seo.text.grid" as="grid"
+                   type="ecomdev_sphinxseo/adminhtml_text_grid" />
+        </block>
+    </adminhtml_sphinxseo_text_index>
+
+    <adminhtml_sphinxseo_text_grid>
+        <block name="sphinx.seo.text.grid" as="grid"
+               type="ecomdev_sphinxseo/adminhtml_text_grid" output="toHtml" />
+    </adminhtml_sphinxseo_text_grid>
+
+    <adminhtml_sphinxseo_text_edit>
+        <reference name="head">
+            <action method="addItem"><type>skin_js</type><file>js/ecomdev/sphinxseo/text.js</file></action>
+        </reference>
+        <block name="sphinx.seo.text.edit"
+               parent="content"
+               type="ecomdev_sphinxseo/adminhtml_text_edit">
+            <block name="sphinx.scope.edit.form" as="form"
+                   type="ecomdev_sphinxseo/adminhtml_text_edit_form"/>
+        </block>
+        <block name="sphinx.seo.text.edit.tabs"
+               parent="left"
+               type="ecomdev_sphinxseo/adminhtml_text_edit_tabs">
+            <action method="setDestElementId">
+                <element>edit_form</element>
+            </action>
+            <action method="setId">
+                <id>sphinx_seotext_id</id>
+            </action>
+            <action method="setTitle" translate="title" module="ecomdev_sphinxseo">
+                <title>SEO Text Configuration</title>
+            </action>
+            <action method="addTab">
+                <tab>general</tab>
+                <block>ecomdev_sphinxseo/adminhtml_text_edit_tab_main</block>
+            </action>
+            <action method="addTab">
+                <tab>categories</tab>
+                <block>ecomdev_sphinxseo/adminhtml_text_edit_tab_categories</block>
+            </action>
+            <block name="sphinx.seo.text.edit.tab.condition" type="ecomdev_sphinxseo/adminhtml_text_edit_tab_condition" as="condition">
+                <block name="sphinx.seo.text.edit.tab.condition.row" type="adminhtml/template" template="ecomdev/sphinxseo/form/text/row.phtml" as="row" />
+                <block name="sphinx.seo.text.edit.tab.condition.container" type="adminhtml/template" template="ecomdev/sphinxseo/form/text/container.phtml" as="container" />
+            </block>
+            <action method="addTab">
+                <tab>condition</tab>
+                <block>condition</block>
+            </action>
+            <action method="addTab">
+                <tab>attribute</tab>
+                <block>ecomdev_sphinxseo/adminhtml_text_edit_tab_attribute</block>
+            </action>
+        </block>
+
+        <reference name="js">
+            <block type="core/template" template="catalog/wysiwyg/js.phtml" name="catalog.wysiwyg.js" />
+        </reference>
+    </adminhtml_sphinxseo_text_edit>
+</layout>

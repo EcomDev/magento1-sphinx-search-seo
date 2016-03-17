@@ -69,7 +69,6 @@ class EcomDev_SphinxSeo_Model_Observer
         $query = array_diff_key($request->getQuery(), $ignoredParams);
 
         $filterConditions = [];
-        $filterNames = [];
 
         if ($query) {
             foreach ($query as $name => $value) {
@@ -85,13 +84,11 @@ class EcomDev_SphinxSeo_Model_Observer
                     }
 
                     $filterConditions[] = sprintf('%s=%s', $name, $condition);
-                    $filterNames[$name] = $name;
                 }
             }
 
             $seoText = Mage::getModel('ecomdev_sphinxseo/text')->loadByConditions(
                 $filterConditions,
-                $filterNames,
                 $category->getId(),
                 $category->getStoreId()
             );

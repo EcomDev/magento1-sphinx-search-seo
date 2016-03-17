@@ -39,13 +39,16 @@ class EcomDev_SphinxSeo_Model_Url_Rewrite_Request
 
     public function __construct(array $args)
     {
-        $class = (class_exists('Enterprise_UrlRewrite_Model_Url_Rewrite_Request')
-            ? 'enterprise_urlrewrite/url_rewrite' : 'core/url_rewrite_request');
+        $class = (
+            Mage::helper('core')->isModuleEnabled('Enterprise_UrlRewrite')
+                ? 'enterprise_urlrewrite/url_rewrite'
+                : 'core/url_rewrite_request'
+        );
 
         $this->request = !empty($args['request']) ? $args['request'] : Mage::app()->getFrontController()->getRequest();
         $this->rewrite = !empty($args['rewrite']) ? $args['rewrite'] : Mage::getModel('core/url_rewrite');
         $this->requestRewrite = Mage::getModel($class, $args);
-        $this->url = Mage::getModel('ecomdev_sphinxseo/url');
+        $this->url = Mage::getSingleton('ecomdev_sphinxseo/url');
         $this->urlBuilder = Mage::getSingleton('ecomdev_sphinx/url_builder');
     }
 

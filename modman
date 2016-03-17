@@ -1,5 +1,5 @@
 src/module/                         app/code/community/EcomDev/SphinxSeo/
 src/design/adminhtml/layout/*.xml   app/design/adminhtml/default/default/layout/ecomdev/
-src/design/adminhtml/template/      app/design/adminhtml/default/default/layout/ecomdev/sphinxseo/
+src/design/adminhtml/template/      app/design/adminhtml/default/default/template/ecomdev/sphinxseo/
 src/skin/adminhtml/js/              skin/adminhtml/default/default/js/ecomdev/sphinxseo/
 src/EcomDev_SphinxSeo.xml           app/etc/modules/EcomDev_SphinxSeo.xml

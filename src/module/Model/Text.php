@@ -191,13 +191,13 @@ class EcomDev_SphinxSeo_Model_Text
      * @param $categoryId
      * @param $storeId
      */
-    public function loadByConditions($filterConditions, $filterNames, $categoryId, $storeId)
+    public function loadByConditions($filterConditions, $categoryId, $storeId)
     {
-        if (empty($filterConditions) || empty($filterNames)) {
+        if (empty($filterConditions)) {
             return $this;
         }
 
-        $textId = $this->getResource()->findTextId($filterConditions, $filterNames, $categoryId, $storeId);
+        $textId = $this->getResource()->findTextId($filterConditions, $categoryId, $storeId);
         if ($textId) {
             $this->load($textId);
         }

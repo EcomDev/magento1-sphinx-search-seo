@@ -75,8 +75,6 @@ class EcomDev_SphinxSeo_Model_Url
 
         if ($suffix) {
             $data['path_info'] .= $suffix;
-        } else {
-            $data['path_info'] .= '/';
         }
 
         $data['query'] = $query;

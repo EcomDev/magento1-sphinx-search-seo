@@ -105,32 +105,35 @@ class EcomDev_SphinxSeo_Model_Resource_Text
      * @param $storeId
      * @return bool|string
      */
-    public function findTextId($filterConditions, $filterNames, $categoryId, $storeId)
+    public function findTextId($filterConditions, $categoryId, $storeId)
     {
         $select = $this->_getReadAdapter()->select();
-        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'text_id', 'condition'])
+        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'field', 'condition'])
             ->where('checksum IN(?)', array_map('crc32', $filterConditions))
             ->where('category_id = ?', $categoryId)
             ->where('store_id = ?', $storeId)
             ->having(sprintf('%s IN(?)', $this->_getReadAdapter()->quoteIdentifier('condition')), $filterConditions);
 
-        $textIds = $this->_getReadAdapter()->fetchPairs($select);
+        $textIds = [];
+
+        foreach ($this->_getReadAdapter()->query($select) as $row) {
+            $textIds[$row['text_id']][$row['field']] = true;
+        }
 
         if (!$textIds) {
             return false;
         }
 
         $select->reset();
-        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'text_id'])
+        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'field'])
+            ->where('text_id IN(?)', array_keys($textIds))
             ->where('category_id = ?', $categoryId)
-            ->where('store_id = ?', $storeId)
-            ->where('field NOT IN(?)', $filterNames)
-            ->where('text_id IN(?)', $textIds);
+            ->where('store_id = ?', $storeId);
 
-        $nonValidTextIds = $this->_getReadAdapter()->fetchPairs($select);
-
-        if ($nonValidTextIds) {
-            $textIds = array_diff_key($textIds, $nonValidTextIds);
+        foreach ($this->_getReadAdapter()->query($select) as $row) {
+            if (!isset($textIds[$row['text_id']][$row['field']])) {
+                unset($textIds[$row['text_id']]);
+            }
         }
 
         if (!$textIds) {
@@ -140,7 +143,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
         $select->reset();
         $select->from($this->getTable('ecomdev_sphinxseo/text'), ['text_id'])
             ->order('priority ASC')
-            ->where('text_id IN(?)', $textIds)
+            ->where('text_id IN(?)', array_keys($textIds))
             ->limit(1);
 
         return $this->_getReadAdapter()->fetchOne($select);

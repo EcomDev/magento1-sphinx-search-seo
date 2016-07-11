@@ -146,12 +146,10 @@
             </ecomdev_sphinx_attribute_set_data_from_array_before>
             <ecomdev_sphinx_attribute_validate>
                 <observers>
-                    <observers>
-                        <ecomdev_sphinxseo>
-                            <class>ecomdev_sphinxseo/observer</class>
-                            <method>validateSeoAttribute</method>
-                        </ecomdev_sphinxseo>
-                    </observers>
+                    <ecomdev_sphinxseo>
+                        <class>ecomdev_sphinxseo/observer</class>
+                        <method>validateSeoAttribute</method>
+                    </ecomdev_sphinxseo>
                 </observers>
             </ecomdev_sphinx_attribute_validate>
             <ecomdev_sphinx_attribute_load_after>

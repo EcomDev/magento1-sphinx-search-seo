@@ -41,7 +41,7 @@ class EcomDev_SphinxSeo_Model_Text
      */
     protected function _setDataFromArray(array $data)
     {
-        $attributes = ['name', 'store_id', 'is_active', 'priority', 'category_ids', 'filter'];
+        $attributes = ['name', 'store_id', 'is_active', 'priority', 'category_ids', 'filter', 'url_slug'];
         $this->importData($data, $attributes);
         
         if (isset($data['category'])) {
@@ -72,6 +72,18 @@ class EcomDev_SphinxSeo_Model_Text
                 return is_array($value);
             }
         );
+
+        $this->_addValueValidation(
+            'url_slug',
+            $this->__('You must assign single category if url slug is specified'),
+            function ($value) {
+                if (empty($value)) {
+                    return true;
+                }
+
+                return count($this->getCategoryIds()) === 1;
+            }
+        );
     }
 
     /**
@@ -83,6 +95,10 @@ class EcomDev_SphinxSeo_Model_Text
     {
         if (is_array($categoryIds = $this->getData('category_ids'))) {
             return $categoryIds;
+        }
+
+        if (is_string($categoryIds)) {
+            return array_filter(explode(',', $categoryIds));
         }
 
         return [];
@@ -103,6 +119,14 @@ class EcomDev_SphinxSeo_Model_Text
                 if ($attribute->isOption()) {
                     $applicableAttributes[$attribute->getAttributeCode()] = $attribute->getAttributeName();
                 }
+            }
+
+            foreach (Mage::getResourceModel('ecomdev_sphinx/field_collection')
+                    ->addFieldToFilter('is_active', 1) as $field) {
+                /** @var $field EcomDev_Sphinx_Model_Field */
+                $applicableAttributes[$field->getCode()] = Mage::helper('ecomdev_sphinxseo')->__(
+                    '[Virtual] %s', $field->getName()
+                );
             }
 
             $this->setData('_applicable_attribute_hash', $applicableAttributes);
@@ -158,6 +182,12 @@ class EcomDev_SphinxSeo_Model_Text
                 $attributeOptionHash[$map[$option['attribute_id']]][$option['option_id']] = $option['value'];
             }
 
+            foreach (Mage::getResourceModel('ecomdev_sphinx/field_collection')
+                         ->addFieldToFilter('is_active', 1) as $field) {
+                /** @var $field EcomDev_Sphinx_Model_Field */
+                $attributeOptionHash[$field->getCode()] = $field->getOptionHash();
+            }
+
             $this->setData('_attribute_option_hash', $attributeOptionHash);
         }
         return $this->_getData('_attribute_option_hash');
@@ -205,5 +235,17 @@ class EcomDev_SphinxSeo_Model_Text
         return $this;
     }
 
-
+    /**
+     * Returns single text url slugs
+     *
+     * @param string $categoryId
+     * @param string $storeId
+     * @param string[] $filterCodes
+     *
+     * @return array
+     */
+    public function getSingleTextSlugs($categoryId, $storeId, $filterCodes)
+    {
+        return $this->getResource()->getSingleTextSlugs($categoryId, $storeId, $filterCodes);
+    }
 }

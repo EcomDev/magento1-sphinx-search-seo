@@ -26,6 +26,7 @@ class EcomDev_SphinxSeo_Block_Adminhtml_Text_Grid
         $this->_addTextColumn('name', $this->__('Name'));
         $this->_addOptionsColumn('is_active', $this->__('Is Active'), 'ecomdev_sphinx/source_yesno', '100px');
         $this->_addTextColumn('priority', $this->__('Priority'));
+        $this->_addTextColumn('url_slug', $this->__('Single Page Url Slug'));
         $this->_addActionColumn($this->__('Action'), array('edit' => $this->__('Edit')));
 
         return parent::_prepareColumns();

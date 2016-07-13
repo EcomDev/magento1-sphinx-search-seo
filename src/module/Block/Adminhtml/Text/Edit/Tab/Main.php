@@ -37,7 +37,16 @@ class EcomDev_SphinxSeo_Block_Adminhtml_Text_Edit_Tab_Main
                 [
                     'required' => false
                 ]
+            )
+            ->_addField(
+                'url_slug', 'text',
+                $this->__('Single Page Url Slug'),
+                [
+                    'required' => false
+                ]
             );
+        ;
+
 
         return $this;
     }

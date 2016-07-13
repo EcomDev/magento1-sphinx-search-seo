@@ -9,6 +9,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
 
     private $categoryTable;
     private $filterTable;
+    private $urlTable;
 
     /**
      * Resource initialization
@@ -19,6 +20,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
         $this->_init('ecomdev_sphinxseo/text', 'text_id');
         $this->categoryTable = $this->getTable('ecomdev_sphinxseo/text_category');
         $this->filterTable = $this->getTable('ecomdev_sphinxseo/text_filter');
+        $this->urlTable = $this->getTable('ecomdev_sphinxseo/text_url');
     }
 
     /**
@@ -45,6 +47,17 @@ class EcomDev_SphinxSeo_Model_Resource_Text
         }
 
         $object->setFilter($filter);
+
+        $select = $this->_getReadAdapter()->select();
+        $select->from($this->urlTable, ['url_slug'])
+            ->where('text_id = ?', $object->getId());
+
+        $urlSlug = $this->_getReadAdapter()->fetchOne($select);
+
+        if ($urlSlug) {
+            $object->setUrlSlug($urlSlug);
+        }
+
         return parent::_afterLoad($object);
     }
 
@@ -69,6 +82,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
 
         $this->_getWriteAdapter()->delete($this->categoryTable, ['text_id = ?' => $object->getId()]);
         $this->_getWriteAdapter()->delete($this->filterTable, ['text_id = ?' => $object->getId()]);
+        $this->_getWriteAdapter()->delete($this->urlTable, ['text_id = ?' => $object->getId()]);
 
         $insertTo = [];
 
@@ -89,9 +103,23 @@ class EcomDev_SphinxSeo_Model_Resource_Text
             }
         }
 
+
+        if ($urlSlug = trim($object->getUrlSlug(), '/')) {
+            foreach ($categoryIds as $categoryId) {
+                $insertTo[$this->urlTable][] = [
+                    'text_id' => $object->getId(),
+                    'url_slug' => $urlSlug,
+                    'checksum' => crc32($urlSlug),
+                    'category_id' => $categoryId
+                ];
+            }
+        }
+
+
         foreach ($insertTo as $table => $data) {
             $this->_getWriteAdapter()->insertOnDuplicate($table, $data);
         }
+
 
         return parent::_afterSave($object);
     }
@@ -148,5 +176,86 @@ class EcomDev_SphinxSeo_Model_Resource_Text
 
         return $this->_getReadAdapter()->fetchOne($select);
     }
+
+    /**
+     * Associative array of url slugs
+     *
+     * @param string $categoryId
+     * @param string $storeId
+     * @param string[] $filterCodes
+     *
+     * @return string[]
+     */
+    public function getSingleTextSlugs($categoryId, $storeId, $filterCodes)
+    {
+        $select = $this->_getReadAdapter()->select();
+        $select
+            ->from(
+                ['slug' => $this->urlTable],
+                ['text_id', 'url_slug']
+            )
+            ->join(
+                ['text' => $this->getMainTable()],
+                'text.text_id = slug.text_id',
+                []
+            )
+            ->where('slug.category_id = ?', $categoryId)
+            ->where('text.store_id IN(0, ?)', $storeId)
+            ->where('text.is_active = ?', 1)
+        ;
+
+        $urlSlugs = $this->_getReadAdapter()->fetchPairs($select);
+
+        if (!$urlSlugs) {
+            return [];
+        }
+
+        $filterIds = array_flip($filterCodes);
+
+        $select->reset()
+            ->from($this->filterTable, ['text_id', 'filter', 'value'])
+            ->where('text_id IN(?)', array_keys($urlSlugs))
+        ;
+
+        $matches = [];
+        foreach ($this->_getReadAdapter()->query($select) as $row) {
+            if (!isset($filterIds[$row['filter']])) {
+                unset($urlSlugs[$row['text_id']]);
+                continue;
+            }
+
+            if (isset($matches[$row['text_id']][$filterIds[$row['filter']]])) {
+                $matches[$row['text_id']][$filterIds[$row['filter']]] .= ',' . $row['value'];
+                continue;
+            }
+
+            $matches[$row['text_id']][$filterIds[$row['filter']]] = $row['value'];
+        }
+
+        if (empty($matches)) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($urlSlugs as $textId => $slug) {
+            if (!isset($matches[$textId])) {
+                continue;
+            }
+
+            ksort($matches[$textId]);
+
+            $filters = [];
+
+            foreach ($matches[$textId] as $filterId => $value) {
+                $filters[$filterCodes[$filterId]] = $value;
+            }
+
+            $result[json_encode($filters)] = $slug;
+        }
+
+        return $result;
+    }
+    
 
 }

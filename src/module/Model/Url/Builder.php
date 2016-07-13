@@ -7,6 +7,10 @@ class EcomDev_SphinxSeo_Model_Url_Builder
 
     protected $optionSlugs = [];
 
+    protected $fullSlug = [];
+
+    protected $filterCodes = [];
+
     public function setPathReplace($oldPath, $newPath)
     {
         $this->pathReplace[$oldPath] = $newPath;
@@ -22,6 +26,20 @@ class EcomDev_SphinxSeo_Model_Url_Builder
      */
     protected function buildUrl($query, $withRel = false, $separator = '&amp;')
     {
+        if ($query && $this->filterCodes) {
+            $possibleMatch = array_intersect_key($query, $this->filterCodes);
+
+            if (isset($this->fullSlug[json_encode($possibleMatch)])) {
+                $slug = $this->fullSlug[json_encode($possibleMatch)] . '/';
+                $url = Mage::getUrl('', ['_direct' => $slug, '_query' => array_diff_assoc($query, $possibleMatch)]);
+                if ($withRel) {
+                    return [$url, $this->getRel(array_diff_assoc($query, $possibleMatch))];
+                }
+
+                return $url;
+            }
+        }
+
         $matchSlugs = array_intersect_key($this->optionSlugs, $query);
 
         $slugPath = [];
@@ -45,9 +63,16 @@ class EcomDev_SphinxSeo_Model_Url_Builder
             $replacement = '/' . implode('/', $slugPath);
         }
 
-        $url = parent::buildUrl($query, $withRel, $separator);
+        $url = parent::buildUrl($query, false, $separator);
 
-        return str_replace('{slug}', $replacement, $url);
+        $url = str_replace('{slug}', $replacement, $url);
+
+        if ($withRel) {
+            $rel = $this->getRel($query);
+            return [$url, $rel];
+        }
+
+        return $url;
     }
 
     /**
@@ -109,6 +134,16 @@ class EcomDev_SphinxSeo_Model_Url_Builder
     {
         if (!$filterToLoad) {
             return $this;
+        }
+
+        $this->filterCodes = array_combine($filterToLoad, $filterToLoad);
+
+        if ($category = Mage::registry('current_category')) {
+            $this->fullSlug = Mage::getSingleton('ecomdev_sphinxseo/text')->getSingleTextSlugs(
+                $category->getId(),
+                Mage::app()->getStore()->getId(),
+                $filterToLoad
+            );
         }
 
         foreach (Mage::getSingleton('ecomdev_sphinxseo/url')->getFilterSlugs($filterToLoad) as $slug) {

@@ -1,7 +1,7 @@
 <config>
     <modules>
         <EcomDev_SphinxSeo>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
         </EcomDev_SphinxSeo>
     </modules>
     <global>
@@ -25,6 +25,9 @@
                     <text>
                         <table>ecomdev_sphinx_seo_text</table>
                     </text>
+                    <text_url>
+                        <table>ecomdev_sphinx_seo_text_url</table>
+                    </text_url>
                     <text_filter>
                         <table>ecomdev_sphinx_seo_text_filter</table>
                     </text_filter>

@@ -42,6 +42,11 @@ class EcomDev_SphinxSeo_Model_Text
     protected function _setDataFromArray(array $data)
     {
         $attributes = ['name', 'store_id', 'is_active', 'priority', 'category_ids', 'filter', 'url_slug'];
+
+        if (isset($data['category_ids']) && is_string($data['category_ids'])) {
+            $data['category_ids'] = implode(',', $this->parseCategories($data['category_ids']));
+        }
+
         $this->importData($data, $attributes);
         
         if (isset($data['category'])) {
@@ -94,14 +99,24 @@ class EcomDev_SphinxSeo_Model_Text
     public function getCategoryIds()
     {
         if (is_array($categoryIds = $this->getData('category_ids'))) {
-            return $categoryIds;
+            return array_unique(array_filter($categoryIds));
         }
 
         if (is_string($categoryIds)) {
-            return array_filter(explode(',', $categoryIds));
+            return $this->parseCategories($categoryIds);
         }
 
         return [];
+    }
+
+    /**
+     * Parses category identifiers
+     *
+     * @return string[]
+     */
+    private function parseCategories($categoryString)
+    {
+        return array_unique(array_filter(explode(',', $categoryString)));
     }
 
     /**

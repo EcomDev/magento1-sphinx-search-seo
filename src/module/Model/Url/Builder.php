@@ -40,7 +40,11 @@ class EcomDev_SphinxSeo_Model_Url_Builder
             }
         }
 
-        $matchSlugs = array_intersect_key($this->optionSlugs, $query);
+        $matchSlugs = [];
+
+        if (!isset($query['q'])) {
+            $matchSlugs = array_intersect_key($this->optionSlugs, $query);
+        }
 
         $slugPath = [];
         $replacement = '';
@@ -93,9 +97,23 @@ class EcomDev_SphinxSeo_Model_Url_Builder
             $filterToLoad[] = $facet->getFilterField();
         }
 
-        $this->loadSlugs($filterToLoad);
+        $this->processFacetCodes($filterToLoad);
         return parent::initFacets($facets, $activeFilters);
     }
+
+    /**
+     * Processes facet codes
+     *
+     * @param string[] $facetCodes
+     *
+     * @return $this
+     */
+    protected function processFacetCodes($facetCodes)
+    {
+        $this->loadSlugs($facetCodes);
+        return parent::processFacetCodes($facetCodes);
+    }
+
 
     /**
      * Hook for processing path changes
@@ -122,7 +140,6 @@ class EcomDev_SphinxSeo_Model_Url_Builder
 
         return $path . '{slug}';
     }
-
 
     /**
      * Load slugs for filters

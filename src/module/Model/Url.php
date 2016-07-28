@@ -21,7 +21,7 @@ class EcomDev_SphinxSeo_Model_Url
     {
         return $this->_getResource()->findSlugs($filterCodes, Mage::app()->getStore()->getId());
     }
-
+    
     /**
      * Trims request path
      *
@@ -32,12 +32,7 @@ class EcomDev_SphinxSeo_Model_Url
      */
     public function trimRequestPath($requestPath, $query, $storeId)
     {
-        if ($direct = $this->_getResource()->findSingleText($requestPath, $storeId)) {
-            $direct['query'] += $query;
-            return $direct;
-        }
-
-        if (strpos($requestPath, '/') === false) {
+        if (strpos($requestPath, '/') === false || isset($query['q'])) {
             return [];
         }
 

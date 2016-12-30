@@ -86,6 +86,15 @@ EcomDev.Sphinx.SeoFilter = Class.create({
         this.setRowValues($(id), code, map);
         $(id).down('.delete-row').observe('click', this.removeRow.bind(this, id, code));
     },
+
+    fillRowFromMap: function (row, code, map) {
+        for (var optionId in map) {
+            if (typeof(this.attributeOptions.get(code)[optionId]) === 'string') {
+                this.insertOption(row, optionId, this.attributeOptions.get(code)[optionId]);
+            }
+        }
+    },
+
     setRowValues: function (row, code, map) {
         row.attributeCode = code;
         row.options = $H({});
@@ -98,12 +107,7 @@ EcomDev.Sphinx.SeoFilter = Class.create({
         row.optionAddBtn = row.down('.add');
 
 
-        for (var optionId in map) {
-            if (typeof(this.attributeOptions.get(code)[optionId]) === 'string') {
-                this.insertOption(row, optionId, this.attributeOptions.get(code)[optionId]);
-            }
-        }
-
+        this.fillRowFromMap(row, code, map);
 
         row.optionAddBtn.observe('click', function () {
             if (row.optionSelect.value) {

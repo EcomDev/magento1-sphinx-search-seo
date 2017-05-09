@@ -78,6 +78,10 @@ class EcomDev_SphinxSeo_Model_Url_Rewrite_Request
         }
 
         if (!$data) {
+            $data = $this->url->getRequestPathRewrite($pathInfo, $currentStoreId);
+        }
+
+        if (!$data) {
             $this->requestRewrite->rewrite();
             return $this;
         }

@@ -21,7 +21,13 @@ class EcomDev_SphinxSeo_Model_Url
     {
         return $this->_getResource()->findSlugs($filterCodes, Mage::app()->getStore()->getId());
     }
-    
+
+
+    public function getRequestPathRewrite($requestPath, $storeId)
+    {
+        return $this->_getResource()->findSingleText($requestPath, $storeId);
+    }
+
     /**
      * Trims request path
      *

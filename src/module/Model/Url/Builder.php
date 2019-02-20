@@ -147,7 +147,7 @@ class EcomDev_SphinxSeo_Model_Url_Builder
      * @param string $filterToLoad
      * @return $this
      */
-    protected function loadSlugs($filterToLoad)
+    public function loadSlugs($filterToLoad)
     {
         if (!$filterToLoad) {
             return $this;

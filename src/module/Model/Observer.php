@@ -95,10 +95,16 @@ class EcomDev_SphinxSeo_Model_Observer
 
             if ($seoText->getId()) {
                 $category->addData($seoText->getValues());
+                $category->setCanonicalSeo($seoText);
+
+                $category->setSeoRobots('index, follow');
+            } else {
+                $category->setSeoRobots('noindex, nofollow');
             }
+
+            return;
         }
 
-
-
+        $category->setSeoRobots('index, follow');
     }
 }

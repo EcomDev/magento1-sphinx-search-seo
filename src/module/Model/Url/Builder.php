@@ -30,7 +30,7 @@ class EcomDev_SphinxSeo_Model_Url_Builder
             $possibleMatch = array_intersect_key($query, $this->filterCodes);
 
             if (isset($this->fullSlug[json_encode($possibleMatch)])) {
-                $slug = $this->fullSlug[json_encode($possibleMatch)] . '/';
+                $slug = $this->fullSlug[json_encode($possibleMatch)];
                 $url = Mage::getUrl('', ['_direct' => $slug, '_query' => array_diff_assoc($query, $possibleMatch)]);
                 if ($withRel) {
                     return [$url, $this->getRel(array_diff_assoc($query, $possibleMatch))];
@@ -69,6 +69,7 @@ class EcomDev_SphinxSeo_Model_Url_Builder
 
         $url = parent::buildUrl($query, false, $separator);
 
+        $url = str_replace('{slug}/', $replacement, $url);
         $url = str_replace('{slug}', $replacement, $url);
 
         if ($withRel) {

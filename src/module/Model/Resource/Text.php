@@ -144,6 +144,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
 
         $textIds = [];
 
+
         foreach ($this->_getReadAdapter()->query($select) as $row) {
             $textIds[$row['text_id']][$row['field']] = true;
         }
@@ -152,8 +153,16 @@ class EcomDev_SphinxSeo_Model_Resource_Text
             return false;
         }
 
+        $currentConditions = [];
+        $validationConditions = [];
+
+        foreach ($filterConditions as $condition) {
+            list($field, ) = explode('=', $condition, 2);
+            $currentConditions[$field][] = $condition;
+        }
+
         $select->reset();
-        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'field'])
+        $select->from($this->getTable('ecomdev_sphinxseo/index_text'), ['text_id', 'field', 'condition'])
             ->where('text_id IN(?)', array_keys($textIds))
             ->where('category_id = ?', $categoryId)
             ->where('store_id = ?', $storeId);
@@ -161,6 +170,19 @@ class EcomDev_SphinxSeo_Model_Resource_Text
         foreach ($this->_getReadAdapter()->query($select) as $row) {
             if (!isset($textIds[$row['text_id']][$row['field']])) {
                 unset($textIds[$row['text_id']]);
+            }
+
+            if (isset($textIds[$row['text_id']])) {
+                $validationConditions[$row['text_id']][$row['field']][] = $row['condition'];
+            }
+        }
+
+        foreach ($validationConditions as $textId => $filters) {
+            foreach ($filters as $name => $conditions) {
+                if (array_diff($currentConditions[$name], $conditions)) {
+                    unset($textIds[$textId]);
+                    continue 2;
+                }
             }
         }
 
@@ -215,6 +237,7 @@ class EcomDev_SphinxSeo_Model_Resource_Text
         $select->reset()
             ->from($this->filterTable, ['text_id', 'filter', 'value'])
             ->where('text_id IN(?)', array_keys($urlSlugs))
+            ->order('value ASC')
         ;
 
         $matches = [];

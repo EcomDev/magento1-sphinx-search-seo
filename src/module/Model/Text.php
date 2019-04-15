@@ -34,6 +34,18 @@ class EcomDev_SphinxSeo_Model_Text
         $this->_init('ecomdev_sphinxseo/text');
     }
 
+    public function getUrlOptions()
+    {
+        $filters = $this->_getData('filter') ?: [];
+        $urlOptions = [];
+        foreach ($filters as $code => $options) {
+            ksort($options);
+            $urlOptions[$code] = implode(',', array_keys($options));
+        }
+
+        return $urlOptions;
+    }
+
     /**
      * Sets data into model from post array
      *
